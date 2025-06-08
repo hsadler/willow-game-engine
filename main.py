@@ -7,18 +7,19 @@ import math
 SCREEN_TITLE = "Arcade + Pymunk Physics Example"
 SCREEN_WIDTH = arcade.get_display_size()[0]
 SCREEN_HEIGHT = arcade.get_display_size()[1]
-FPS = 120
+FPS = 100
 
 # Game objects
-CIRCLES_COUNT = 100
-CIRCLE_RADIUS_MIN = 10
-CIRCLE_RADIUS_MAX = 10
+CIRCLES_COUNT = 1000
+CIRCLE_RADIUS_MIN = 6
+CIRCLE_RADIUS_MAX = 6
 CIRCLE_MASS = 1.0
-CIRCLE_ELASTICITY = 0.9
-CIRCLE_FRICTION = 0.1
+CIRCLE_ELASTICITY = .99
+CIRCLE_FRICTION = 0.01
+WALL_THICKNESS = 20
 
 # Physics
-DAMPING = 0.95
+DAMPING = 0.99
 GRAVITY = -900
 MIN_INITIAL_VELOCITY = 10
 MAX_INITIAL_VELOCITY = 20
@@ -37,26 +38,25 @@ class MyGame(arcade.Window):
     
     def setup(self):
         # Create boundary walls
-        wall_thickness = 10
         
         # Bottom wall
-        bottom = arcade.SpriteSolidColor(SCREEN_WIDTH, wall_thickness, arcade.color.WHITE)
+        bottom = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_THICKNESS, arcade.color.WHITE)
         bottom.center_x = SCREEN_WIDTH // 2
-        bottom.center_y = wall_thickness // 2
+        bottom.center_y = WALL_THICKNESS // 2
         
         # Top wall
-        top = arcade.SpriteSolidColor(SCREEN_WIDTH, wall_thickness, arcade.color.WHITE)
+        top = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_THICKNESS, arcade.color.WHITE)
         top.center_x = SCREEN_WIDTH // 2
-        top.center_y = SCREEN_HEIGHT - wall_thickness // 2
+        top.center_y = SCREEN_HEIGHT - WALL_THICKNESS // 2
         
         # Left wall
-        left = arcade.SpriteSolidColor(wall_thickness, SCREEN_HEIGHT, arcade.color.WHITE)
-        left.center_x = wall_thickness // 2
+        left = arcade.SpriteSolidColor(WALL_THICKNESS, SCREEN_HEIGHT, arcade.color.WHITE)
+        left.center_x = WALL_THICKNESS // 2
         left.center_y = SCREEN_HEIGHT // 2
         
         # Right wall
-        right = arcade.SpriteSolidColor(wall_thickness, SCREEN_HEIGHT, arcade.color.WHITE)
-        right.center_x = SCREEN_WIDTH - wall_thickness // 2
+        right = arcade.SpriteSolidColor(WALL_THICKNESS, SCREEN_HEIGHT, arcade.color.WHITE)
+        right.center_x = SCREEN_WIDTH - WALL_THICKNESS // 2
         right.center_y = SCREEN_HEIGHT // 2
         
         # Add walls to sprite list and physics engine
@@ -75,8 +75,8 @@ class MyGame(arcade.Window):
             radius = random.randint(CIRCLE_RADIUS_MIN, CIRCLE_RADIUS_MAX)
             circle = arcade.SpriteCircle(radius, color)
             # Random position (away from walls)
-            circle.center_x = random.randint(wall_thickness*2, SCREEN_WIDTH - wall_thickness*2)
-            circle.center_y = random.randint(wall_thickness*2, SCREEN_HEIGHT - wall_thickness*2)
+            circle.center_x = random.randint(WALL_THICKNESS*2, SCREEN_WIDTH - WALL_THICKNESS*2)
+            circle.center_y = random.randint(WALL_THICKNESS*2, SCREEN_HEIGHT - WALL_THICKNESS*2)
             
             self.shapes.append(circle)
             
