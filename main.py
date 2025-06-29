@@ -66,10 +66,10 @@ class MyGame(arcade.Window):
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             radius = random.randint(settings.BALL_RADIUS_MIN, settings.BALL_RADIUS_MAX)
             ball = Ball(
-                random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_WIDTH - settings.WALL_THICKNESS*2),
-                random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_HEIGHT - settings.WALL_THICKNESS*2),
-                radius,
-                color
+                x=random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_WIDTH - settings.WALL_THICKNESS*2),
+                y=random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_HEIGHT - settings.WALL_THICKNESS*2),
+                radius=radius,
+                color=color
             )
             self.sprites.append(ball.sprite)
             # Add circle to physics engine
