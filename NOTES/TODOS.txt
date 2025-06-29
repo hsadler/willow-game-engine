@@ -1,0 +1,3 @@
+
+- decompose and refactor
+- make settings easy to change

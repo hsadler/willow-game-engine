@@ -1,105 +1,102 @@
+import math
+import random
 import arcade
 from arcade.pymunk_physics_engine import PymunkPhysicsEngine
-import random
-import math
 
-# Game options
-SCREEN_TITLE = "Arcade + Pymunk Physics Example"
-SCREEN_WIDTH = arcade.get_display_size()[0]
-SCREEN_HEIGHT = arcade.get_display_size()[1]
-FPS = 100
+import settings
+from gameobjects import Wall, Ball
 
-# Game objects
-CIRCLES_COUNT = 1000
-CIRCLE_RADIUS_MIN = 6
-CIRCLE_RADIUS_MAX = 6
-CIRCLE_MASS = 1.0
-CIRCLE_ELASTICITY = .99
-CIRCLE_FRICTION = 0.01
-WALL_THICKNESS = 20
-
-# Physics
-DAMPING = 0.99
-GRAVITY = -900
-MIN_INITIAL_VELOCITY = 10
-MAX_INITIAL_VELOCITY = 20
 
 class MyGame(arcade.Window):
-    def __init__(self, num_circles=CIRCLES_COUNT):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-        self.set_update_rate(1/FPS)
+    def __init__(self):
+        super().__init__(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT, settings.SCREEN_TITLE)
+        self.set_update_rate(1/settings.FPS)
         self.set_fullscreen(True)
         self.physics_engine = PymunkPhysicsEngine(
-            gravity=(0, GRAVITY),
-            damping=DAMPING,
+            gravity=(0, settings.GRAVITY),
+            damping=settings.DAMPING,
         )
-        self.shapes = arcade.SpriteList()
-        self.num_circles = num_circles
-    
-    def setup(self):
-        # Create boundary walls
-        
+        self.sprites = arcade.SpriteList()
+        self.num_circles = settings.BALL_COUNT
+
+    def create_walls(self):
         # Bottom wall
-        bottom = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_THICKNESS, arcade.color.WHITE)
-        bottom.center_x = SCREEN_WIDTH // 2
-        bottom.center_y = WALL_THICKNESS // 2
-        
+        bottom = Wall(
+            x=settings.SCREEN_WIDTH // 2,
+            y=settings.WALL_THICKNESS // 2,
+            width=settings.SCREEN_WIDTH,
+            height=settings.WALL_THICKNESS,
+            color=arcade.color.WHITE,
+        )
         # Top wall
-        top = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_THICKNESS, arcade.color.WHITE)
-        top.center_x = SCREEN_WIDTH // 2
-        top.center_y = SCREEN_HEIGHT - WALL_THICKNESS // 2
-        
+        top = Wall(
+            x=settings.SCREEN_WIDTH // 2,
+            y=settings.SCREEN_HEIGHT - settings.WALL_THICKNESS // 2,
+            width=settings.SCREEN_WIDTH,
+            height=settings.WALL_THICKNESS,
+            color=arcade.color.WHITE,
+        )
         # Left wall
-        left = arcade.SpriteSolidColor(WALL_THICKNESS, SCREEN_HEIGHT, arcade.color.WHITE)
-        left.center_x = WALL_THICKNESS // 2
-        left.center_y = SCREEN_HEIGHT // 2
-        
+        left = Wall(
+            x=settings.WALL_THICKNESS // 2,
+            y=settings.SCREEN_HEIGHT // 2,
+            width=settings.WALL_THICKNESS,
+            height=settings.SCREEN_HEIGHT,
+            color=arcade.color.WHITE,
+        )
         # Right wall
-        right = arcade.SpriteSolidColor(WALL_THICKNESS, SCREEN_HEIGHT, arcade.color.WHITE)
-        right.center_x = SCREEN_WIDTH - WALL_THICKNESS // 2
-        right.center_y = SCREEN_HEIGHT // 2
-        
-        # Add walls to sprite list and physics engine
-        for wall in (bottom, top, left, right):
-            self.shapes.append(wall)
+        right = Wall(
+            x=settings.SCREEN_WIDTH - settings.WALL_THICKNESS // 2,
+            y=settings.SCREEN_HEIGHT // 2,
+            width=settings.WALL_THICKNESS,
+            height=settings.SCREEN_HEIGHT,
+            color=arcade.color.WHITE,
+        )
+        for wall in [bottom, top, left, right]:
+            self.sprites.append(wall.sprite)
             self.physics_engine.add_sprite(
-                wall, 
+                wall.sprite,
                 body_type=PymunkPhysicsEngine.STATIC,
                 friction=0.0,
                 elasticity=1.0
             )
-        
-        # Create specified number of circles
+
+    def create_balls(self):
         for _ in range(self.num_circles):
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            radius = random.randint(CIRCLE_RADIUS_MIN, CIRCLE_RADIUS_MAX)
-            circle = arcade.SpriteCircle(radius, color)
-            # Random position (away from walls)
-            circle.center_x = random.randint(WALL_THICKNESS*2, SCREEN_WIDTH - WALL_THICKNESS*2)
-            circle.center_y = random.randint(WALL_THICKNESS*2, SCREEN_HEIGHT - WALL_THICKNESS*2)
-            
-            self.shapes.append(circle)
-            
+            radius = random.randint(settings.BALL_RADIUS_MIN, settings.BALL_RADIUS_MAX)
+            ball = Ball(
+                random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_WIDTH - settings.WALL_THICKNESS*2),
+                random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_HEIGHT - settings.WALL_THICKNESS*2),
+                radius,
+                color
+            )
+            self.sprites.append(ball.sprite)
             # Add circle to physics engine
             self.physics_engine.add_sprite(
-                circle,
-                mass=CIRCLE_MASS,
-                friction=CIRCLE_FRICTION,
-                elasticity=CIRCLE_ELASTICITY
+                ball.sprite,
+                mass=settings.BALL_MASS,
+                friction=settings.BALL_FRICTION,
+                elasticity=settings.BALL_ELASTICITY
             )
-            
             # Apply random velocity
             angle = random.uniform(0, 2 * math.pi)
-            speed = random.uniform(MIN_INITIAL_VELOCITY, MAX_INITIAL_VELOCITY)
+            speed = random.uniform(settings.BALL_MIN_INITIAL_VELOCITY, settings.BALL_MAX_INITIAL_VELOCITY)
             velocity = (speed * math.cos(angle), speed * math.sin(angle))
-            self.physics_engine.set_velocity(circle, velocity)
+            self.physics_engine.set_velocity(ball.sprite, velocity)
+    
+    def setup(self):
+        # Create walls
+        self.create_walls()
+        # Create balls
+        # self.create_balls()
 
     def on_update(self, delta_time: float):
         self.physics_engine.step(delta_time)
 
     def on_draw(self):
         self.clear()
-        self.shapes.draw()
+        self.sprites.draw()
 
 if __name__ == "__main__":
     game = MyGame()

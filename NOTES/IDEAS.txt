@@ -1,0 +1,29 @@
+
+Learn basic programming by adding ball spawners and objects to the game.
+
+# Settings available:
+
+Physics settings:
+    - Gravity
+    - Friction
+    - Elasticity
+    - Damping
+
+Ball spawners:
+    - Location
+    - Spawn direction
+    - Spawn rate
+    - Ball Size
+    - Color
+
+Despawn zones:
+    - Location
+    - Size
+
+Static objects:
+    - Platforms
+    - Walls
+
+Non-static objects:
+    - Wheels
+    - Hinging Platforms
