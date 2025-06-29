@@ -89,7 +89,7 @@ class MyGame(arcade.Window):
         # Create walls
         self.create_walls()
         # Create balls
-        # self.create_balls()
+        self.create_balls()
 
     def on_update(self, delta_time: float):
         self.physics_engine.step(delta_time)
