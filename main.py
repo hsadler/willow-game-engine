@@ -8,6 +8,9 @@ from gameobjects import Wall, Ball
 
 
 class MyGame(arcade.Window):
+    physics_engine: PymunkPhysicsEngine
+    sprites: arcade.SpriteList
+
     def __init__(self):
         super().__init__(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT, settings.SCREEN_TITLE)
         self.set_update_rate(1/settings.FPS)
@@ -17,7 +20,6 @@ class MyGame(arcade.Window):
             damping=settings.DAMPING,
         )
         self.sprites = arcade.SpriteList()
-        self.num_circles = settings.BALL_COUNT
 
     def create_walls(self):
         # Bottom wall
@@ -62,12 +64,18 @@ class MyGame(arcade.Window):
             )
 
     def create_balls(self):
-        for _ in range(self.num_circles):
+        for _ in range(settings.BALL_COUNT):
+            # Random color
             color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            # Random radius
             radius = random.randint(settings.BALL_RADIUS_MIN, settings.BALL_RADIUS_MAX)
+            # Random position (away from walls)
+            x_pos = random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_WIDTH - settings.WALL_THICKNESS*2)
+            y_pos = random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_HEIGHT - settings.WALL_THICKNESS*2)
+            # Create ball
             ball = Ball(
-                x=random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_WIDTH - settings.WALL_THICKNESS*2),
-                y=random.randint(settings.WALL_THICKNESS*2, settings.SCREEN_HEIGHT - settings.WALL_THICKNESS*2),
+                x=x_pos,
+                y=y_pos,
                 radius=radius,
                 color=color
             )
@@ -86,9 +94,7 @@ class MyGame(arcade.Window):
             self.physics_engine.set_velocity(ball.sprite, velocity)
     
     def setup(self):
-        # Create walls
         self.create_walls()
-        # Create balls
         self.create_balls()
 
     def on_update(self, delta_time: float):
